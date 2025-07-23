@@ -3,6 +3,8 @@ import cohere
 from dotenv import load_dotenv
 import os
 from pydantic import BaseModel
+from langchain_cohere import ChatCohere
+from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 
 
 load_dotenv()
