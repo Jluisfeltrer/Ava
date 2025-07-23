@@ -1,13 +1,28 @@
-from fastapi import FastAPI #1 import FastAPI
+from fastapi import FastAPI, Request #1 import FastAPI
+import cohere
+from dotenv import load_dotenv
+import os
+from pydantic import BaseModel
+
+
+load_dotenv()
+api_key = os.getenv("COHERE_API_KEY")
+co = cohere.Client(api_key)
 
 app = FastAPI(
     title="AVA",  
     description="My first agent",
     version="1.0.0",
-    openapi_tags=[{"name": "example", "description": "An example tag"}]
+    openapi_tags=[{"name": "example", "description": "An example tag"}]) # 2 instancia app
 
-) # 2 instancia app
+class UserMessage(BaseModel):
+    message : str
 
-@app.get("/")
-async def root():
-    return {"message": "Hello, Jose!"}
+@app.post("/chat")
+async def chat(user_message : UserMessage):
+    response = co.generate(
+        model = 'command', 
+        prompt=user_message.message,
+        max_tokens=100
+    )
+    return {'response': response.generations}
